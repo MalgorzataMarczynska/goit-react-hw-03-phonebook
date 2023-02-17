@@ -5,19 +5,19 @@ import { ContactList } from './ContactList/ContactList.js';
 import { ContactItem } from './ContactItem/ContactItem.js';
 import { ContactForm } from './ContactForm/ContactForm.js';
 
-// const INITIAL_STATE = {
-//   contacts: [],
-//   filters: '',
-// };
 const INITIAL_STATE = {
-  contacts: [
-    { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-    { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-    { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-    { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-  ],
+  contacts: [],
   filters: '',
 };
+// const INITIAL_STATE = {
+//   contacts: [
+//     { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+//     { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+//     { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+//     { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+//   ],
+//   filters: '',
+// };
 export class App extends React.Component {
   state = { ...INITIAL_STATE };
   //poniższe id i propsy do nich do wykorzystania w złożonych formularzach, gdy ten sam komponent form będzie wykorzystywany w różnych miejscach i odnosić się do niego trzeba będzie unikalnym id
@@ -54,6 +54,24 @@ export class App extends React.Component {
       return { contacts };
     });
   };
+  componentDidMount() {
+    const contactList = window.localStorage.getItem('contact-list');
+    if (!contactList) return;
+
+    try {
+      this.setState({
+        contacts: JSON.parse(contactList),
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  componentDidUpdate(_prevProps, prevState) {
+    if (prevState.contacts.length !== this.state.contacts.length) {
+      const contactListStringified = JSON.stringify(this.state.contacts);
+      window.localStorage.setItem('contact-list', contactListStringified);
+    }
+  }
 
   render() {
     const { contacts, filters } = this.state;
